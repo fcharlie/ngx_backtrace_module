@@ -1,0 +1,23 @@
+
+BACKTRACEOBJ="$PWD/objs/backtrace.o"
+
+if [ ! -f "obj/backtrace.o" ]; then
+  mkdir -p "$PWD/objs"
+  c++ -c -std=c++11 "$ngx_addon_dir/backtrace.cc" -o $BACKTRACEOBJ
+fi
+
+OSNAME=$(uname)
+
+echo "OSNAME: $OSNAME"
+
+CXXLIB="-lstdc++"
+
+if [ "$OSNAME" = "Darwin" ]; then
+	CXXLIB="-lc++"
+fi
+
+ngx_module_type=NGX_HTTP_MODULE
+ngx_module_name=ngx_backtrace_module
+ngx_module_srcs="$ngx_addon_dir/ngx_backtrace_module.c"
+ngx_module_libs="$BACKTRACEOBJ $CXXLIB"
+. auto/module
